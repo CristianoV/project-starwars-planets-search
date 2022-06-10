@@ -2,53 +2,47 @@ import React, { useContext, useState } from 'react';
 import AppContext from '../Context/AppContext';
 
 function Search() {
-  const { planets, setFilter } = useContext(AppContext);
+  const { planets, setPlanetSearch,
+    planetSearch, filters, setFilters } = useContext(AppContext);
   const [search, setSearch] = useState({
     column: 'population',
     comparison: 'maior que',
     value: '0',
   });
 
-  // {
-  //   filterByNumericValues: [
-  //     {
-  //       column: 'population',
-  //       comparison: 'maior que',
-  //       value: '100000',
-  //     }
-  //   ]
-  // }
+  const handleChange = ({ target }) => {
+    const { name, value } = target;
+    setSearch({ ...search, [name]: value });
+  };
+
+  const handleSubmit = () => {
+    const { column, comparison, value } = search;
+    switch (comparison) {
+    case 'maior que':
+      setPlanetSearch(!filters ? planets : planetSearch
+        .filter((planet) => parseInt(planet[column], 10) > value));
+      break;
+    case 'menor que':
+      setPlanetSearch(!filters ? planets : planetSearch
+        .filter((planet) => parseInt(planet[column], 10) < value));
+      break;
+    case 'igual a':
+      setPlanetSearch(!filters ? planets : planetSearch
+        .filter((planet) => planet[column] === value));
+      break;
+    default:
+      console.log('error');
+      break;
+    }
+    setFilters([...filters, search]);
+  };
 
   const filterInput = (e) => {
     const value = planets.filter((planet) => {
       const regex = new RegExp(e.target.value, 'gi');
       return planet.name.match(regex);
     });
-    setFilter(value);
-  };
-
-  const handleChange = ({ target }) => {
-    const { name, value } = target;
-    setSearch({ ...search, [name]: value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const { column, comparison, value } = search;
-    switch (comparison) {
-    case 'maior que':
-      setFilter(planets.filter((planet) => parseInt(planet[column], 10) > value));
-      break;
-    case 'menor que':
-      setFilter(planets.filter((planet) => parseInt(planet[column], 10) < value));
-      break;
-    case 'igual a':
-      setFilter(planets.filter((planet) => planet[column] === value));
-      break;
-    default:
-      console.log('error');
-      break;
-    }
+    setPlanetSearch(value);
   };
 
   return (
@@ -97,7 +91,7 @@ function Search() {
         <button
           type="button"
           data-testid="button-filter"
-          onClick={ (e) => handleSubmit(e) }
+          onClick={ () => handleSubmit() }
         >
           Filtrar
 

@@ -4,13 +4,16 @@ import AppContext from '../Context/AppContext';
 
 function Provider({ children }) {
   const [planets, setPlanets] = useState([]);
-  const [filter, setFilter] = useState('');
+  const [planetSearch, setPlanetSearch] = useState('');
+  const [filters, setFilters] = useState([]);
 
   const contextValue = {
     planets,
     setPlanets,
-    filter,
-    setFilter,
+    planetSearch,
+    setPlanetSearch,
+    filters,
+    setFilters,
   };
 
   return (

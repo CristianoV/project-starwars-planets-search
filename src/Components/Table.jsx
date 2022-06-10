@@ -2,7 +2,9 @@ import { useContext, React, useEffect } from 'react';
 import AppContext from '../Context/AppContext';
 
 function Table() {
-  const { planets, setPlanets, filter } = useContext(AppContext);
+  const { planets, setPlanets, planetSearch, setPlanetSearch } = useContext(AppContext);
+  const { filters } = useContext(AppContext);
+
   useEffect(() => {
     if (planets.length === 0) {
       fetch('https://swapi-trybe.herokuapp.com/api/planets/')
@@ -11,6 +13,10 @@ function Table() {
         .catch((error) => console.log(error));
     }
   }, [planets, setPlanets]);
+
+  useEffect(() => {
+    setPlanetSearch(planets);
+  }, [planets, setPlanetSearch]);
 
   const teste = (filtered) => filtered.map((planet, index) => (
     <tr key={ index }>
@@ -32,6 +38,14 @@ function Table() {
 
   return (
     <div>
+      {filters.length > 0 && filters.map((asd, index) => (
+        <div key={ index }>
+          <p>{asd.column}</p>
+          <p>{asd.comparison}</p>
+          <p>{asd.value}</p>
+          <button type="button" onClick={ () => (console.log(asd)) }>Excluir</button>
+        </div>
+      ))}
       <table>
         <thead>
           <tr>
@@ -50,7 +64,7 @@ function Table() {
             <th>Url</th>
           </tr>
 
-          {!filter ? teste(planets) : teste(filter)}
+          {planetSearch && teste(planetSearch)}
         </thead>
       </table>
     </div>
