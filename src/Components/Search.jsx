@@ -60,11 +60,10 @@ function Search() {
   };
 
   const filterInput = (e) => {
-    const value = !filters ? planets : planetSearch
-      .filter((planet) => {
-        const regex = new RegExp(e.target.value, 'gi');
-        return planet.name.match(regex);
-      });
+    const value = planets.filter((planet) => {
+      const regex = new RegExp(e.target.value, 'gi');
+      return planet.name.match(regex);
+    });
     setPlanetSearch(value);
   };
 
