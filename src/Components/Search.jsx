@@ -10,6 +10,22 @@ function Search() {
     value: '0',
   });
 
+  const [columnInput, setColumnInput] = useState([
+    'population',
+    'orbital_period',
+    'diameter',
+    'rotation_period',
+    'surface_water',
+  ]);
+
+  const cleanState = (teste) => {
+    setSearch({
+      column: teste,
+      comparison: 'maior que',
+      value: '0',
+    });
+  };
+
   const handleChange = ({ target }) => {
     const { name, value } = target;
     setSearch({ ...search, [name]: value });
@@ -17,31 +33,38 @@ function Search() {
 
   const handleSubmit = () => {
     const { column, comparison, value } = search;
-    switch (comparison) {
-    case 'maior que':
-      setPlanetSearch(!filters ? planets : planetSearch
-        .filter((planet) => parseInt(planet[column], 10) > value));
-      break;
-    case 'menor que':
-      setPlanetSearch(!filters ? planets : planetSearch
-        .filter((planet) => parseInt(planet[column], 10) < value));
-      break;
-    case 'igual a':
-      setPlanetSearch(!filters ? planets : planetSearch
-        .filter((planet) => planet[column] === value));
-      break;
-    default:
-      console.log('error');
-      break;
+    const NotSumFilter = filters.some((filter) => filter.column === column);
+    const filterColumn = columnInput.filter((filter) => filter !== column);
+    if (!NotSumFilter) {
+      setColumnInput(filterColumn);
+      switch (comparison) {
+      case 'maior que':
+        setPlanetSearch(planetSearch
+          .filter((planet) => parseInt(planet[column], 10) > value));
+        break;
+      case 'menor que':
+        setPlanetSearch(planetSearch
+          .filter((planet) => parseInt(planet[column], 10) < value));
+        break;
+      case 'igual a':
+        setPlanetSearch(planetSearch
+          .filter((planet) => planet[column] === value));
+        break;
+      default:
+        console.log('error');
+        break;
+      }
+      setFilters([...filters, search]);
+      cleanState(filterColumn[0]);
     }
-    setFilters([...filters, search]);
   };
 
   const filterInput = (e) => {
-    const value = planets.filter((planet) => {
-      const regex = new RegExp(e.target.value, 'gi');
-      return planet.name.match(regex);
-    });
+    const value = !filters ? planets : planetSearch
+      .filter((planet) => {
+        const regex = new RegExp(e.target.value, 'gi');
+        return planet.name.match(regex);
+      });
     setPlanetSearch(value);
   };
 
@@ -64,11 +87,11 @@ function Search() {
           data-testid="column-filter"
           onChange={ (e) => handleChange(e) }
         >
-          <option value="population">population</option>
-          <option value="orbital_period">orbital_period</option>
-          <option value="diameter">diameter</option>
-          <option value="rotation_period">rotation_period</option>
-          <option value="surface_water">surface_water</option>
+          {columnInput.map((column) => (
+            <option key={ column } value={ column }>
+              { column }
+            </option>
+          ))}
         </select>
         <select
           name="comparison"
